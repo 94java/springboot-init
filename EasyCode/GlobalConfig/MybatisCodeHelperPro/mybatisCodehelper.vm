@@ -1,0 +1,64 @@
+##following code can be generated use MybatisCodeHelperPro plugin mybatis generator mingrate to template generate.
+##copy group for different project.
+## todo: 代码生成器配置入口
+#set($javamodelSrcFolder="${projectPath}/src/main/java")
+#set($modelPackageName="cc.jiusi.springbootinit.model.entity")
+#set($mapperSrcFolder="${projectPath}/src/main/java")
+#set($mapperPackageName="cc.jiusi.springbootinit.mapper")
+#set($mapperXmlFolder="${projectPath}/src/main/resources")
+#set($mapperXmlPackage="mappers")
+#set($serviceSrcFolder="${projectPath}/src/main/java")
+#set($servicePackageName="cc.jiusi.springbootinit.service")
+#set($serviceImplSrcFolder="${projectPath}/src/main/java")
+#set($serviceImplPackageName="cc.jiusi.springbootinit.service.impl")
+#set($controllerSrcFolder="${projectPath}/src/main/java")
+#set($controllerPackageName="cc.jiusi.springbootinit.controller")
+#set($useLombok=true)
+#set($useSwagger=true)
+#set($useOpenApi=false)
+#set($addSchemaName=false)
+#set($mapperSuffix="Mapper")
+#set($daoSuffix="Mapper")
+#set($useActualColumName=false)
+#set($modelSuffix="")
+
+#if($useActualColumName)
+    #foreach($column in $tableInfo.fullColumn)
+        $!column.setName($column.obj.name)
+    #end
+#end
+
+#*remove table prefix*#
+###set($removeTablePrefix="sys_")
+#set($entityName=$tableInfo.name)
+#if($tableInfo.obj.name.startsWith("sys_"))
+    #set($entityName = ${tableInfo.name.substring(3)})
+#end
+#set($entityName = $tool.append($entityName,$modelSuffix))
+
+
+#*add model Suffix to model name*#
+###set($modelSuffix="Model")
+##${tableInfo.setName($tool.append($tableInfo.getName(),$modelSuffix))}
+
+
+#*remove column prefix like when column is f_hello want generate hello, you can substring the column name*#
+###set($removeColumnPrefix="f_")
+###foreach($column in $tableInfo.fullColumn)
+##    #if($column.obj.name.startsWith($removeColumnPrefix))
+##        $!column.setName($tool.firstLowerCase($column.getName().substring(1)))
+##    #end
+###end
+
+
+
+###foreach($column in $tableInfo.fullColumn)
+##    #set($propertyName=$column.obj.name)
+##    #set($propertyName=$propertyName.substring(0,1).toLowerCase()+$propertyName.substring(1))
+##    $!column.setName($propertyName)
+##    #if($propertyName.endsWith("ID"))
+##        #set($lenght=$propertyName.length() - 2)
+##        #set($theName=${propertyName.substring(0,$lenght)}+"Id")
+##        $!column.setName($theName)
+##    #end
+###end

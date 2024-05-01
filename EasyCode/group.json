@@ -1,0 +1,20 @@
+[
+  {
+    "groupName": "Mybatis",
+    "templateName": "Mybatis",
+    "globalConfigName": "MybatisCodeHelperPro",
+    "columnConfigName": "Default.json",
+    "typeMapperName": "Default.json",
+    "tableNameRegex": ".*",
+    "schemaNameRegex": ".*"
+  },
+  {
+    "groupName": "MybatisPlus",
+    "templateName": "MybatisPlus",
+    "globalConfigName": "MybatisCodeHelperPro",
+    "columnConfigName": "Default.json",
+    "typeMapperName": "Default.json",
+    "tableNameRegex": ".*",
+    "schemaNameRegex": ".*"
+  }
+]

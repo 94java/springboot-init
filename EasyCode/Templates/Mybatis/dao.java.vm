@@ -1,0 +1,82 @@
+##定义初始变量
+##引入宏定义
+$!{define.vm}
+$!{mybatisCodehelper.vm}
+#set($daoName = $tool.append($tableInfo.name, ${daoSuffix}))
+##设置回调
+#set($daoSavePath = $tool.append(${mapperSrcFolder},"/",${mapperPackageName.replace(".","/")}))
+
+$!callback.setSavePath($daoSavePath)
+$!callback.setFileName($tool.append($daoName, ".java"))
+
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+package $!{mapperPackageName};
+
+import $!{modelPackageName}.$!{entityName};
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
+
+##使用宏定义实现类注释信息
+#tableComment("表数据库访问层")
+public interface $!{daoName} {
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param $!pk.name 主键
+     * @return 实例对象
+     */
+    $!{entityName} selectById($!pk.shortType $!pk.name);
+
+    /**
+     * 查询所有数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName}) 查询条件
+     * @return List<$!{entityName}> 实例对象列表
+     */
+    List<$!{entityName}> selectAll($!{entityName} $!tool.firstLowerCase($!{entityName}));
+
+    /**
+     * 统计总行数
+     *
+     * @param $!tool.firstLowerCase($!{entityName}) 查询条件
+     * @return 总行数
+     */
+    long count($!{entityName} $!tool.firstLowerCase($!{entityName}));
+
+    /**
+     * 新增数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName}) 实例对象
+     * @return 影响行数
+     */
+    int insert($!{entityName} $!tool.firstLowerCase($!{entityName}));
+
+    /**
+     * 批量新增数据（MyBatis原生foreach方法）
+     *
+     * @param entities List<$!{entityName}> 实例对象列表
+     * @return 影响行数
+     */
+    int insertBatch(@Param("entities") List<$!{entityName}> entities);
+
+    /**
+     * 修改数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName}) 实例对象
+     * @return 影响行数
+     */
+    int update($!{entityName} $!tool.firstLowerCase($!{entityName}));
+
+    /**
+     * 通过主键集合批量删除数据
+     *
+     * @param ids List<Long> 主键id集合
+     * @return 影响行数
+     */
+    int deleteBatchByIds(@Param("ids") List<Long> ids);
+}

@@ -1,0 +1,140 @@
+##引入宏定义
+$!{define.vm}
+##定义初始变量
+$!{mybatisCodehelper.vm}
+#set($ServiceImplName = $tool.append($tableInfo.name, "ServiceImpl"))
+#set($entityNameLower = $tool.firstLowerCase($entityName))
+##设置回调
+##$!callback.setFileName($tool.append($ServiceImplName, ".java"))
+##$!callback.setSavePath($tool.append($tableInfo.savePath, "/service/impl"))
+#set($serviceImplSavePath = $tool.append(${serviceImplSrcFolder},"/",${serviceImplPackageName.replace(".","/")}))
+
+$!callback.setSavePath($serviceImplSavePath)
+$!callback.setFileName($tool.append($ServiceImplName, ".java"))
+
+#set($daoName = $tool.append($tableInfo.name, ${daoSuffix}))
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+package $!{serviceImplPackageName};
+
+import $!{modelPackageName}.$!{entityName};
+import ${mapperPackageName}.${daoName};
+import ${servicePackageName}.$!{tableInfo.name}Service;
+import org.springframework.stereotype.Service;
+import java.util.List;
+import javax.annotation.Resource;
+import cn.hutool.core.bean.BeanUtil;
+
+##使用宏定义实现类注释信息
+#tableComment("表服务实现类")
+@Service("$!tool.firstLowerCase($!{tableInfo.name})Service")
+public class $!{ServiceImplName} implements $!{tableInfo.name}Service {
+    @Resource
+    private ${daoName} $!tool.firstLowerCase($daoName);
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param $!pk.name 主键
+     * @return 实例对象
+     */
+    @Override
+    public $!{entityName} queryById($!pk.shortType $!pk.name) {
+        return $!{tool.firstLowerCase($daoName)}.selectById($!pk.name);
+    }
+
+    /**
+     * 通过条件查询所有数据
+     *
+     * @param $!{entityNameLower}QueryRequest 查询条件
+     * @return List<$!{entityName}> 实例对象列表
+     */
+    @Override
+    public List<$!{entityName}> queryAll($!{entityName}QueryRequest $!{entityNameLower}QueryRequest){
+        $!{entityName} $!{entityNameLower} = BeanUtil.copyProperties($!{entityNameLower}QueryRequest, $!{entityName}.class);
+        return $!{tool.firstLowerCase($daoName)}.selectAll($!{entityNameLower});
+    }
+
+    /**
+     * 通过条件查询分页数据
+     *
+     * @param $!{entityNameLower}QueryRequest 查询条件
+     * @return PageInfo<$!{entityName}> 分页信息对象
+     */
+    @Override
+    public PageInfo<$!{entityName}> queryPage($!{entityName}QueryRequest $!{entityNameLower}QueryRequest) {
+        int pageNum = $!{entityNameLower}QueryRequest.getPageNum();
+        int pageSize = $!{entityNameLower}QueryRequest.getPageSize();
+        PageHelper.startPage(pageNum,pageSize);
+        $!{entityName} $!{entityNameLower} = BeanUtil.copyProperties($!{entityNameLower}QueryRequest, $!{entityName}.class);
+        List<$!{entityName}> $!{entityNameLower}s = $!{tool.firstLowerCase($daoName)}.selectAll($!{entityNameLower});
+        PageInfo<$!{entityName}> pageInfo = new PageInfo<>($!{entityNameLower}s);
+        return pageInfo;
+    }
+
+    /**
+     * 根据条件统计总行数
+     *
+     * @param $!{entityNameLower}QueryRequest 查询条件
+     * @return 总行数
+     */
+    @Override
+    public long queryCount($!{entityName}QueryRequest $!{entityNameLower}QueryRequest){
+        $!{entityName} $!{entityNameLower} = BeanUtil.copyProperties($!{entityNameLower}QueryRequest, $!{entityName}.class);
+        return $!{tool.firstLowerCase($daoName)}.count($!{entityNameLower});
+    }
+
+    /**
+     * 新增数据
+     *
+     * @param $!{entityNameLower}AddRequest 实例对象
+     * @return 实例对象
+     */
+    @Override
+    public $!{entityName} insert($!{entityName}AddRequest $!{entityNameLower}AddRequest) {
+        $!{entityName} $!{entityNameLower} = BeanUtil.copyProperties($!{entityNameLower}AddRequest, $!{entityName}.class);
+        $!{tool.firstLowerCase($daoName)}.insert($!{entityNameLower});
+        return $!{entityNameLower};
+    }
+
+    /**
+     * 批量新增数据
+     *
+     * @param entities List<$!{entityName}AddRequest> 实例对象列表
+     * @return 影响行数
+     */
+    @Override
+    public int insertBatch(List<$!{entityName}AddRequest> entities){
+        List<$!{entityName}> $!{entityNameLower}s = entities.stream()
+            .map(item -> BeanUtil.copyProperties(item, $!{entityName}.class))
+            .collect(Collectors.toList());
+        return $!{tool.firstLowerCase($daoName)}.insertBatch($!{entityNameLower}s);
+    }
+
+    /**
+     * 修改数据
+     *
+     * @param $!tool.firstLowerCase($!{tableInfo.name})UpdateRequest 实例对象
+     * @return 实例对象
+     */
+    @Override
+    public $!{entityName} update($!{entityName}UpdateRequest $!{entityNameLower}UpdateRequest) {
+        $!{entityName} $!{entityNameLower} = BeanUtil.copyProperties($!{entityNameLower}UpdateRequest, $!{entityName}.class);
+        $!{tool.firstLowerCase($daoName)}.update($!{entityNameLower});
+        return queryById($!{tool.firstLowerCase($!{entityName})}.get$!tool.firstUpperCase($pk.name)());
+    }
+
+    /**
+     * 通过主键集合批量删除数据
+     *
+     * @param deleteRequest 删除请求对象
+     * @return 影响行数
+     */
+    @Override
+    public int deleteBatchByIds(DeleteRequest deleteRequest){
+        return $!{tool.firstLowerCase($daoName)}.deleteBatchByIds(deleteRequest.getIds());
+    }
+}

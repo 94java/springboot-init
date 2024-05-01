@@ -1,0 +1,89 @@
+##引入宏定义
+$!{define.vm}
+##定义初始变量
+$!{mybatisCodehelper.vm}
+#set($serviceName = $tool.append($tableInfo.name, "Service"))
+##设置回调
+#set($serviceSavePath = $tool.append(${serviceSrcFolder},"/",${servicePackageName.replace(".","/")}))
+
+$!callback.setSavePath($serviceSavePath)
+$!callback.setFileName($tool.append($serviceName, ".java"))
+
+##拿到主键
+#if(!$tableInfo.pkColumn.isEmpty())
+    #set($pk = $tableInfo.pkColumn.get(0))
+#end
+
+package $!{servicePackageName};
+
+import $!{modelPackageName}.$!{entityName};
+import java.util.List;
+
+##使用宏定义实现类注释信息
+#tableComment("表服务接口")
+public interface $!{serviceName} {
+
+    /**
+     * 通过ID查询单条数据
+     *
+     * @param $!pk.name 主键
+     * @return 实例对象
+     */
+    $!{entityName} queryById($!pk.shortType $!pk.name);
+
+    /**
+     * 通过条件查询所有数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName})QueryRequest 查询条件
+     * @return List<$!{entityName}> 实例对象列表
+     */
+    List<$!{entityName}> queryAll($!{entityName}QueryRequest $!tool.firstLowerCase($!{entityName})QueryRequest);
+
+    /**
+     * 通过条件查询分页数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName})QueryRequest 查询条件
+     * @return PageInfo<$!{entityName}> 分页信息对象
+     */
+    PageInfo<$!{entityName}> queryPage($!{entityName}QueryRequest $!tool.firstLowerCase($!{entityName})QueryRequest);
+
+    /**
+     * 根据条件统计总行数
+     *
+     * @param $!tool.firstLowerCase($!{entityName})QueryRequest 查询条件
+     * @return 总行数
+     */
+    long queryCount($!{entityName}QueryRequest $!tool.firstLowerCase($!{entityName})QueryRequest);
+
+    /**
+     * 新增数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName})AddRequest 实例对象
+     * @return 实例对象
+     */
+    $!{entityName} insert($!{entityName}AddRequest $!tool.firstLowerCase($!{entityName})AddRequest);
+
+    /**
+     * 批量新增数据
+     *
+     * @param entities List<$!{entityName}AddRequest> 实例对象列表
+     * @return 影响行数
+     */
+    int insertBatch(List<$!{entityName}AddRequest> entities);
+
+    /**
+     * 修改数据
+     *
+     * @param $!tool.firstLowerCase($!{entityName})UpdateRequest 实例对象
+     * @return 实例对象
+     */
+    $!{entityName} update($!{entityName}UpdateRequest $!tool.firstLowerCase($!{entityName})UpdateRequest);
+
+    /**
+     * 通过主键集合批量删除数据
+     *
+     * @param deleteRequest 删除请求对象
+     * @return 影响行数
+     */
+    int deleteBatchByIds(DeleteRequest deleteRequest);
+}

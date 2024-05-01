@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: springboot-init
+  # 默认 dev 环境
+  # todo: 如需更换环境请更改此处
+  profiles:
+    active: dev
+  # 支持 swagger3
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  # 数据库配置
+  # todo: 需替换配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.36.128:3306/yqx_db
+    username: root
+    password: lh18391794828
+  # Redis 配置
+  # todo: 需替换配置
+  redis:
+    database: 1
+    host: 192.168.36.128
+    port: 6379
+    timeout: 5000
+  # 文件上传
+  servlet:
+    multipart:
+      # 大小限制
+      max-file-size: 10MB
+server:
+  port: 8866
+  servlet:
+    context-path: /api
+mybatis:
+  # 配置校验
+  check-config-location: true
+  # 配置实体类别名
+  type-aliases-package: "cc.jiusi.springboot.init"
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 转驼峰
+    map-underscore-to-camel-case: true
+  mapperLocations: classpath*:mappers/**/*Mapper.xml
